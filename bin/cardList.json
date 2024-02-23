@@ -1,0 +1,90 @@
+[
+	{
+		"name": "grasp",
+		"cost": 0,
+		"minRange": 1,
+		"maxRange": 1,
+		"power": 3,
+		"speed": 7,
+		"armor": 0,
+		"guard": 0,
+		"cancelable": false
+	}
+	{
+		"name": "slash",
+		"cost": 0,
+		"minRange": 1,
+		"maxRange": 1,
+		"power": 4,
+		"speed": 5,
+		"armor": 0,
+		"guard": 0,
+		"cancelable": false
+	}
+	{
+		"name": "dust",
+		"cost": 0,
+		"minRange": 2,
+		"maxRange": 3,
+		"power": 5,
+		"speed": 3,
+		"armor": 0,
+		"guard": 4,
+		"cancelable": false
+	}
+	{
+		"name": "focus",
+		"cost": 0,
+		"minRange": 1,
+		"maxRange": 2,
+		"power": 4,
+		"speed": 1,
+		"armor": 2,
+		"guard": 5,
+		"cancelable": false
+	}
+	{
+		"name": "cross",
+		"cost": 0,
+		"minRange": 1,
+		"maxRange": 2,
+		"power": 3,
+		"speed": 6,
+		"armor": 0,
+		"guard": 0,
+		"cancelable": false
+	}
+	{
+		"name": "dive",
+		"cost": 0,
+		"minRange": 1,
+		"maxRange": 1,
+		"power": 5,
+		"speed": 4,
+		"armor": 0,
+		"guard": 0,
+		"cancelable": false
+	}
+	{
+		"name": "sweep",
+		"cost": 0,
+		"minRange": 1,
+		"maxRange": 3,
+		"power": 6,
+		"speed": 2,
+		"armor": 0,
+		"guard": 6,
+		"cancelable": false
+	}
+	{
+		"name": "block",
+		"cost": 0,
+		"minRange": 0,
+		"maxRange": 0,
+		"power": 0,
+		"speed": 0,
+		"armor": 2,
+		"guard": 3,
+		"cancelable": false
+	}
+]
