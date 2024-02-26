@@ -2,7 +2,9 @@ package cardGame;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.*;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -16,10 +18,12 @@ public class GamePanel extends JPanel implements Runnable{
 	 * 
 	 */
 	private static final long serialVersionUID = 6642625196859423117L;
-	private static int FPS = 30;
-	private static double drawTime = 1000000000/FPS;
+	private final int FPS = 60;
 	
-	Thread thread;
+	private BufferedImage backgroundImg;
+	
+	
+	private Thread thread;
 	
 	// Player
 	List<Card> playerHand = new ArrayList<>();
@@ -33,6 +37,8 @@ public class GamePanel extends JPanel implements Runnable{
 	int windowWidth = 1920;
 	int windowHeight = 1080;
 	
+	Dimension size = new Dimension(windowWidth,windowHeight);
+	
 	// Card Dimensions
 	int cardWidth = 140;
 	int cardHeight = 196;
@@ -40,19 +46,36 @@ public class GamePanel extends JPanel implements Runnable{
 	JFrame frame = new JFrame("Exceed Fighting System");	
 	
 	public GamePanel() {
+		setPanelSize();
 		
+		importImg();
+	}
+
+	private void importImg() {
+		InputStream is = getClass().getResourceAsStream("/background2.png");
+		
+		try {
+			backgroundImg = ImageIO.read(is);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void setPanelSize() {
+		this.setPreferredSize(size);
+
 	}
 
 	public void newFrame() {
-		frame.setVisible(true);
-		frame.setSize(windowWidth, windowHeight);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(this);		
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		this.setLayout(new BorderLayout());
+		frame.pack();
 		this.setBackground(new Color(27,27,27));
-		frame.add(this);
+		frame.setVisible(true);
+
 	}
 	
 	public void startGame() {
@@ -99,21 +122,34 @@ public class GamePanel extends JPanel implements Runnable{
 
 	@Override
 	public void run() {
-		long lastTime = System.nanoTime();
-		long currentTime;
-		double delta = 0;
+		double timePerFrame = 1000000000.0 / FPS;
+		long lastFrame = System.nanoTime();
+		long lastCheck = System.currentTimeMillis();
+		long now;
+		double delta = 0.0;
+		int frames = 0;
 		
 		while(thread != null) {
 			
 			// Display each frame 1/60 of a second (60FPS)
-			currentTime = System.nanoTime();
-			delta += (currentTime - lastTime) / drawTime;
-			lastTime = currentTime;
+			now = System.nanoTime();
+			delta += (now - lastFrame) / timePerFrame;
+			//delta += (now - lastFrame) / timePerFrame;
 			
+			// Something is wrong.
 			if (delta >= 1) {
 				update();
 				repaint();
+				lastFrame = now;
+				frames++;
 				delta--;
+
+			}
+			
+			if (System.currentTimeMillis() - lastCheck >= 1000) {
+				lastCheck = System.currentTimeMillis();
+				System.out.println("FPS: " + frames);
+				frames = 0;
 			}
 		}
 	}
@@ -124,19 +160,20 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		try {
-//			Image backgroundImg = ImageIO.read(getClass().getResource("/background.png"));
-//			g.drawImage(backgroundImg,0,0,windowWidth,windowHeight,null);
-			
-			for (int i = 0; i < playerHand.size(); i++) {
-				Image cardImg = ImageIO.read(getClass().getResource("/blankCard.png"));
-				g.drawImage(cardImg,(windowWidth-(i+1)*cardWidth)/2,windowHeight-cardHeight/2,cardWidth, cardHeight,null);
-			}
-			
-			
-		} catch(IOException e) {
-			System.out.println(e.getMessage());
-		}
+		
+		g.drawImage(backgroundImg,0,0,null);
+
+//		try {
+//			
+//			for (int i = 0; i < playerHand.size(); i++) {
+//				Image cardImg = ImageIO.read(getClass().getResource("/blankCard.png"));
+//				g.drawImage(cardImg,(windowWidth-(i+1)*cardWidth)/2,windowHeight-cardHeight/2,cardWidth, cardHeight,null);
+//			}
+//			
+//			
+//		} catch(IOException e) {
+//			System.out.println(e.getMessage());
+//		}
 		g.dispose();
 		
 	}
