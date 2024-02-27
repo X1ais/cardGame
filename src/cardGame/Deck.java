@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Deck {
-	private static final int STARTING_HAND_SIZE = 5;
+public class Deck implements Runnable {
+	private static final int STARTING_HAND_SIZE = 7;
 	private Random random = new Random();
 	private List<Card> cards = new ArrayList<>();
 
@@ -51,6 +51,12 @@ public class Deck {
 			player.add(draw());
 			opp.add(draw());
 		}
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

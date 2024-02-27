@@ -19,25 +19,29 @@ public class GamePanel extends JPanel implements Runnable {
 	private final int FPS = 120;
 	private double delta;
 	
+	boolean startSetup;
+	
 	// Player
 	private List<Card> playerHand = new ArrayList<>();
-	private List<Image> playerHandImgs = new ArrayList<>();
 	private int playerPosition;
 	
 	// Opponent
-	private List<Card> oppHand = new ArrayList<>();
-	private List<Image> oppHandImgs = new ArrayList<>();
+	private List<Card> opponentHand = new ArrayList<>();
 	private int oppPosition; 
 	
+	// Deck of Cards
+	private static Deck playerDeck;
+	private static Deck opponentDeck;
+	
 	// Window Dimensions
-	private int windowWidth = 1920;
-	private int windowHeight = 1080;
+	private int windowWidth = 1280;
+	private int windowHeight = 720;
 	
 	Dimension size = new Dimension(windowWidth,windowHeight);
 	
 	// Card Dimensions
-	private int cardWidth = 140;
-	private int cardHeight = 196;
+	private int cardWidth = 165;
+	private int cardHeight = 231;
 
 	private String bgPath = "/background2.png";
 	
@@ -80,21 +84,27 @@ public class GamePanel extends JPanel implements Runnable {
 	}
 	
 	public void startGame() {
-		Deck deck = new Deck();
+		startSetup = true;
+		playerDeck = new Deck();
+		opponentDeck = new Deck();
 		
-		deck.shuffle();
+		playerDeck.shuffle();
+		opponentDeck.shuffle();
 		
-		System.out.println("Starting Deck: ");
-		deck.describe();
 		
 		// Deal each player a starting hand.
-		deck.deal(playerHand, oppHand);
+		// deck.deal(playerHand, oppHand);
+		for (int i = 0; i < 5; i++) {
+			playerHand.add(playerDeck.draw());
+			opponentHand.add(opponentDeck.draw());
+		}
+
 	
 		System.out.println("Starting Hands:");
 		System.out.println("Player:");
 		System.out.println(playerHand);
 		System.out.println("Opponent:");
-		System.out.println(oppHand);
+		System.out.println(opponentHand);
 		
 		// Set players' starting position
 		playerPosition = 2;
@@ -126,14 +136,16 @@ public class GamePanel extends JPanel implements Runnable {
 		long now = System.nanoTime();
 		long lastCheck = System.currentTimeMillis();
 		int frames = 0;
-
 		long previousTime = System.nanoTime();
+	
 		
 		while(gameThread != null) {
 			now = System.nanoTime();
 			
 			delta += (now - previousTime) / timePerFrame;
 			previousTime = now;
+			
+
 
 			if (delta >= 1) {
 				update();
@@ -151,27 +163,30 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 	}
 	
+	public static Deck getPlayerDeck() {
+		return playerDeck;
+	}
+	
+	public static Deck getOpponentDeck() {
+		return opponentDeck;
+	}
+	
 	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+		Graphics2D g2 = (Graphics2D) g;
+		super.paintComponent(g2);
 		
-		g.drawImage(bgImage,0,0,null);
-		
+		g2.drawImage(bgImage,0,0,windowWidth,windowHeight,null);
+		g2.translate((windowWidth-cardWidth)/2, windowHeight-cardHeight);
+		g2.rotate(Math.toRadians(-2*(1+playerHand.size())),cardWidth/2,3*cardHeight);
+
 		for (int i = 0; i < playerHand.size(); i++) {
-			g.drawImage(playerHand.get(i).getCardImage(),100 + 50*i,100,cardWidth, cardHeight, null);
+			Image cardImage = playerHand.get(i).getCardImage();
+			g2.rotate(Math.toRadians(4),cardWidth/2,3*cardHeight);
+			g2.drawImage(cardImage,cardWidth/8*((1-playerHand.size())/2 + i),cardHeight/4,cardWidth, cardHeight, null);
 		}
 
-//		try {
-//			
-//			for (int i = 0; i < playerHand.size(); i++) {
-//				Image cardImg = ImageIO.read(getClass().getResource("/blankCard.png"));
-//				g.drawImage(cardImg,(windowWidth-(i+1)*cardWidth)/2,windowHeight-cardHeight/2,cardWidth, cardHeight,null);
-//			}
-//			
-//			
-//		} catch(IOException e) {
-//			System.out.println(e.getMessage());
-//		}
-		g.dispose();
+
+		g2.dispose();
 		
 	}
 	
