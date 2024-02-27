@@ -1,81 +1,82 @@
 package cardGame;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
 
-public class GamePanel extends JPanel implements Runnable{
-	/**
-	 * 
-	 */
+public class GamePanel extends JPanel implements Runnable {
 	private static final long serialVersionUID = 6642625196859423117L;
-	private final int FPS = 60;
 	
-	private BufferedImage backgroundImg;
+	private BufferedImage bgImage;
+	private Thread gameThread;
 	
-	
-	private Thread thread;
+	private final int FPS = 120;
+	private double delta;
 	
 	// Player
-	List<Card> playerHand = new ArrayList<>();
+	private List<Card> playerHand = new ArrayList<>();
+	private List<Image> playerHandImgs = new ArrayList<>();
+	private int playerPosition;
 	
-	int playerPosition;
 	// Opponent
-	List<Card> oppHand = new ArrayList<>();
-	int oppPosition; 
+	private List<Card> oppHand = new ArrayList<>();
+	private List<Image> oppHandImgs = new ArrayList<>();
+	private int oppPosition; 
 	
 	// Window Dimensions
-	int windowWidth = 1920;
-	int windowHeight = 1080;
+	private int windowWidth = 1920;
+	private int windowHeight = 1080;
 	
 	Dimension size = new Dimension(windowWidth,windowHeight);
 	
 	// Card Dimensions
-	int cardWidth = 140;
-	int cardHeight = 196;
+	private int cardWidth = 140;
+	private int cardHeight = 196;
+
+	private String bgPath = "/background2.png";
 	
-	JFrame frame = new JFrame("Exceed Fighting System");	
+	
+	/*
+	 * 
+	 */
+	
+	
 	
 	public GamePanel() {
 		setPanelSize();
-		
-		importImg();
+		bgImage = importImg(bgPath);
 	}
+	
+	/*
+	 * 
+	 */
 
-	private void importImg() {
-		InputStream is = getClass().getResourceAsStream("/background2.png");
+	private BufferedImage importImg(String path) {
+		BufferedImage img = null;
+		InputStream is = getClass().getResourceAsStream(path);
 		
 		try {
-			backgroundImg = ImageIO.read(is);
+			img = ImageIO.read(is);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return img;
 	}
 
 	private void setPanelSize() {
 		this.setPreferredSize(size);
 
 	}
-
-	public void newFrame() {
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(this);		
-		frame.setLocationRelativeTo(null);
-		frame.setResizable(false);
-		frame.pack();
-		this.setBackground(new Color(27,27,27));
-		frame.setVisible(true);
-
+	
+	public void update() {
+		
 	}
 	
 	public void startGame() {
@@ -116,35 +117,31 @@ public class GamePanel extends JPanel implements Runnable{
 		System.out.println();
 		System.out.println("———————————————————————————");
 		
-		thread = new Thread(this);
-		thread.start();
+		gameThread = new Thread(this);
+		gameThread.start();
 	}
 
-	@Override
 	public void run() {
 		double timePerFrame = 1000000000.0 / FPS;
-		long lastFrame = System.nanoTime();
+		long now = System.nanoTime();
 		long lastCheck = System.currentTimeMillis();
-		long now;
-		double delta = 0.0;
 		int frames = 0;
+
+		long previousTime = System.nanoTime();
 		
-		while(thread != null) {
-			
-			// Display each frame 1/60 of a second (60FPS)
+		while(gameThread != null) {
 			now = System.nanoTime();
-			delta += (now - lastFrame) / timePerFrame;
-			//delta += (now - lastFrame) / timePerFrame;
 			
-			// Something is wrong.
+			delta += (now - previousTime) / timePerFrame;
+			previousTime = now;
+
 			if (delta >= 1) {
 				update();
 				repaint();
-				lastFrame = now;
 				frames++;
 				delta--;
-
 			}
+
 			
 			if (System.currentTimeMillis() - lastCheck >= 1000) {
 				lastCheck = System.currentTimeMillis();
@@ -154,14 +151,14 @@ public class GamePanel extends JPanel implements Runnable{
 		}
 	}
 	
-	public void update() {
-		
-	}
-	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		g.drawImage(backgroundImg,0,0,null);
+		g.drawImage(bgImage,0,0,null);
+		
+		for (int i = 0; i < playerHand.size(); i++) {
+			g.drawImage(playerHand.get(i).getCardImage(),100 + 50*i,100,cardWidth, cardHeight, null);
+		}
 
 //		try {
 //			

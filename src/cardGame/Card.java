@@ -1,9 +1,17 @@
 package cardGame;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
+
 public class Card {
 	// Still need to add Attack Effects (i.e. Before, Hit, After, etc), Boosts
 
 	private int ownerId;
+	private BufferedImage cardImage = null;
 	private String name;
 	private int cost;
 	private int minRange;
@@ -28,6 +36,13 @@ public class Card {
 		this.armor = armor;
 		this.guard = guard;
 		this.cancelable = cancelable;
+		InputStream is = getClass().getResourceAsStream("/cards/" + name + ".png");
+		try {
+			cardImage = ImageIO.read(is);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void describe() {
@@ -124,5 +139,8 @@ public class Card {
 		this.cancelable = cancellable;
 	}
 
+	public Image getCardImage() {
+		return cardImage;
+	}
 	
 }

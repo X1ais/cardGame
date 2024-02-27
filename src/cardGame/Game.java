@@ -1,18 +1,14 @@
 package cardGame;
 
-import javax.swing.JFrame;
 
 public class Game {
-
-	public static void main(String[] args) {
+	private GamePanel gamePanel;
+	
+	public Game() {
+		gamePanel = new GamePanel(); 
+		new GameWindow(gamePanel);
 		
-		GamePanel exceed = new GamePanel();
-		Thread thread;
-		exceed.newFrame();
-		exceed.startGame();
-
+		gamePanel.startGame();
 	}
 	
-
-
 }
